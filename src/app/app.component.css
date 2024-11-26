@@ -49,3 +49,16 @@
 #cancel-delete-btn:hover{
   background-color: #717171;
 }
+.modal-content {
+
+  display: flex;
+  flex-direction: column; 
+  
+}
+.exceeded-deadline {
+  color: #721c24;
+}
+
+.within-deadline {
+  color: #155724;
+}

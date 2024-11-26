@@ -2,6 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+interface Task {
+  title: string;
+  deadline: Date;
+  priority: number;
+  completed: boolean;
+}
+
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -9,23 +17,48 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
+
 export class AppComponent {
   newTask: string = '';
-  tasks: string[] = [];     //Lista wszystkich zadan
-  tasksToDo: string[] = []; //Lista zadan do wykonania
+  newDeadline: string = '';
+  newPriority: number = 1;
+  tasks: Task[] = [];     //Lista wszystkich zadan
+  tasksToDo: Task[] = []; //Lista zadan do wykonania
 
   // Modal
   showModal: boolean = false;
-  taskToDelete: { task: string; index: number } | null = null;
+  taskToDelete: { task: Task; index: number } | null = null;
+
+  showSortDialog: boolean = false;
 
 
-// Dodawanie nowego zadania
-  addTask(): void {
-    if (this.newTask.trim()) {
-      this.tasks.push(this.newTask.trim());
-      this.newTask = '';
-    }
+// Dodawanie nowego zadania 
+addTask(): void {
+  const currentDate = new Date();
+  const enteredDate = new Date(this.newDeadline);
+
+  if (!this.newTask.trim()) {
+    alert('Nazwa zadania nie może być pusta.');
+    return;
   }
+ 
+  if (this.newPriority < 1) {
+    alert('Priorytet musi być większy niz 0.');
+    return;
+  }
+  if (this.newTask.trim()) {
+    const newTaskObj: Task = {
+      title: this.newTask.trim(),
+      deadline: new Date(this.newDeadline), 
+      priority: this.newPriority,
+      completed: false
+    };
+    this.tasks.push(newTaskObj);
+    this.newTask = '';
+    this.newDeadline = '';
+    this.newPriority = 1;
+  }
+}
 
   // Dodawanie zadania do listy do zrobiena
   addToDo(index: number): void {
@@ -41,7 +74,7 @@ export class AppComponent {
     this.tasksToDo.splice(index, 1);
   }
 
-  openModal(task: string, index: number): void {
+  openModal(task: Task, index: number): void {
     this.taskToDelete = { task, index };
     this.showModal = true;
   }
@@ -58,6 +91,29 @@ export class AppComponent {
       this.showModal = false;
     }
   }
+
+  isDeadlineExceeded(task: Task): boolean {
+    return new Date() > task.deadline;
+  }
+
+  sortTasks(by: 'priority' | 'deadline', ascending: boolean): void {
+    const compareFn = (a: Task, b: Task) => {
+      const valueA = by === 'priority' ? a.priority : a.deadline.getTime();
+      const valueB = by === 'priority' ? b.priority : b.deadline.getTime();
+      return ascending ? valueA - valueB : valueB - valueA;
+    };
+    this.tasks.sort(compareFn);
+    this.closeSortDialog();
+  }
+
+  openSortDialog(): void {
+    this.showSortDialog = true;
+  }
+
+  closeSortDialog(): void {
+    this.showSortDialog = false;
+  }
+  
 }
 
 
