@@ -1,7 +1,8 @@
 <main>
-  <h1>Calendar</h1>
+  <h1>Kalendarz zadań</h1>
 
   <div style="margin: 20px;">
+    <!-- Formularz dodawania zadania -->
     <form (ngSubmit)="addTask()">
       <input
         [(ngModel)]="newTask"
@@ -28,9 +29,11 @@
       <button type="submit">Dodaj zadanie</button>
     </form>
 
+    <!-- Lista zadań -->
     <h3>Lista zadań:</h3>
-    <button (click)="openSortDialog()">Filtruj</button>
+    <button (click)="openSortDialog()">Sortuj zadania</button>
 
+    <!-- Modal sortowania -->
     <div class="modal" *ngIf="showSortDialog">
       <div class="modal-content">
         <h2>Sortowanie</h2>
@@ -44,32 +47,44 @@
 
     <ul>
       <li *ngFor="let task of tasks; let i = index"
-      [ngClass]="{ 'exceeded-deadline': isDeadlineExceeded(task), 'within-deadline': !isDeadlineExceeded(task) }"
+          [ngClass]="{
+  'new-task': task.status === 'to-do',
+  'status-progress': task.status === 'in-progress',
+  'status-done': task.status === 'done'
+}"
       >
-        <strong>{{ task.title }}</strong>        (Termin: {{ task.deadline | date: 'dd/MM/yyyy' }}, Priorytet: {{ task.priority }})
+        <strong>{{ task.title }}</strong>
+        (Termin: {{ task.deadline | date: 'dd/MM/yyyy' }}, Priorytet: {{ task.priority }}, Status: {{ task.status }})
         <button (click)="addToDo(i)">Dodaj do wykonania</button>
-        <button (click)="openModal(task, i)" >Usuń</button>
+        <button (click)="updateTaskStatus(task, 'to-do')">Nowe</button>
+        <button (click)="updateTaskStatus(task, 'in-progress')">W toku</button>
+        <button (click)="updateTaskStatus(task, 'done')">Zakończone</button>
+        <button (click)="openModal(task, i)">Usuń</button>
       </li>
     </ul>
 
+    <!-- Lista zadań do wykonania -->
     <h3>Zadania do wykonania:</h3>
-    
-
     <ul>
       <li *ngFor="let task of tasksToDo; let i = index">
         <strong>{{ task.title }}</strong>
-        (Termin: {{ task.deadline | date: 'dd/MM/yyyy' }}, Priorytet: {{ task.priority }})
-        <button (click)="removeFromToDo(i)">&times; </button>
+        (Termin: {{ task.deadline | date: 'dd/MM/yyyy' }}, Priorytet: {{ task.priority }}, Status: {{ task.status }})
+        <button (click)="removeFromToDo(i)">Przenieś do listy</button>
+        <button (click)="updateTaskStatus(task, 'to-do')">Nowe</button>
+        <button (click)="updateTaskStatus(task, 'in-progress')">W toku</button>
+        <button (click)="updateTaskStatus(task, 'done')">Zakończone</button>
       </li>
     </ul>
+
   </div>
 
+  <!-- Modal potwierdzenia usunięcia -->
   <div class="modal" *ngIf="showModal">
     <div class="modal-content">
       <h2>Potwierdzenie</h2>
       <p>Czy na pewno chcesz usunąć zadanie: "{{ taskToDelete?.task?.title }}"?</p>
-      <button (click)="confirmDeleteTask()" id="confirm-delete-btn" >Usuń</button>
-      <button (click)="closeModal() " id="cancel-delete-btn">Anuluj</button>
+      <button (click)="confirmDeleteTask()" id="confirm-delete-btn">Usuń</button>
+      <button (click)="closeModal()" id="cancel-delete-btn">Anuluj</button>
     </div>
   </div>
 </main>

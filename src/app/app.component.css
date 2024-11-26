@@ -52,8 +52,8 @@
 .modal-content {
 
   display: flex;
-  flex-direction: column; 
-  
+  flex-direction: column;
+
 }
 .exceeded-deadline {
   color: #721c24;
@@ -61,4 +61,21 @@
 
 .within-deadline {
   color: #155724;
+}
+
+.new {
+  color: blue;
+}
+
+.status-start {
+  color: orange;
+}
+
+.status-progress {
+  color: purple;
+}
+
+.status-done {
+  color: green;
+  text-decoration: line-through;
 }
